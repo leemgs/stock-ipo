@@ -18,10 +18,37 @@
 
 ## 사용 방법
 
-### 실행
+### 기본 실행
 
 ```bash
 python3 ipo_analyzer.py
+```
+
+### 커스텀 데이터로 분석
+
+```bash
+python3 example_usage.py
+```
+
+또는 직접 코드에서 사용:
+
+```python
+from datetime import date
+from ipo_analyzer import IPOStock, IPOAnalyzer
+
+# 공모주 데이터 생성
+stocks = [
+    IPOStock(
+        name="종목명",
+        listing_date=date(2026, 1, 15),
+        # ... 기타 필드
+    )
+]
+
+# 분석 실행
+analyzer = IPOAnalyzer(stocks)
+report = analyzer.generate_report()
+print(report)
 ```
 
 ### 출력
