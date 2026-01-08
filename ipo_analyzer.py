@@ -125,6 +125,14 @@ class IPOAnalyzer:
             reasons.append(
                 f"예상 수익률 {stock.expected_return_pct}% (목표 범위: {self.TARGET_MIN_RETURN}~{self.TARGET_MAX_RETURN}%)"
             )
+            
+            # 적합하지만 주의가 필요한 사항들
+            if stock.available_float_pct > 30.0:
+                warnings.append(f"유통가능물량이 {stock.available_float_pct}%로 다소 높은 편이므로 주의 필요")
+            if stock.ipo_price > (stock.price_band_min + stock.price_band_max) / 2:
+                warnings.append(f"공모가가 희망 밴드 상단에 근접하여 변동성 증가 가능")
+            if stock.expected_return_pct > 20.0:
+                warnings.append(f"예상 수익률 {stock.expected_return_pct}%로 높아 변동성 클 수 있음")
         
         return SuitabilityEvaluation(
             stock=stock,
@@ -235,6 +243,10 @@ class IPOAnalyzer:
             report_lines.append(f"\n{status_mark} {stock.name}: {evaluation.status.value}")
             for reason in evaluation.reasons:
                 report_lines.append(f"    - {reason}")
+            if evaluation.warnings:
+                report_lines.append("  [주의사항]")
+                for warning in evaluation.warnings:
+                    report_lines.append(f"    ⚠ {warning}")
         
         # 3. 매도 타이밍
         report_lines.append("\n\n■ 3. 상장일 매도 타이밍 (오늘 상장 기준)")
@@ -357,9 +369,9 @@ def create_sample_ipo_data() -> List[IPOStock]:
             price_band_max=24000,
             mandatory_holding_pct=12.5,
             available_float_pct=32.0,
-            expected_return_pct=12.0,
             sector="전기차/모빌리티",
             sector_avg_return_pct=9.5,
+            expected_return_pct=12.0,
             strengths=[
                 "전기차 시장 성장세",
                 "의무보유확약 12.5%로 기준 충족",
