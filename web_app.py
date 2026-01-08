@@ -158,7 +158,7 @@ if __name__ == '__main__':
     print("공모주 IPO 단타 분석 웹 애플리케이션")
     print("=" * 80)
     print("\n웹 브라우저에서 다음 주소로 접속하세요:")
-    print("  http://localhost:5000")
+    print("  http://localhost:5701")
     print("\n종료하려면 Ctrl+C를 누르세요.\n")
     print("=" * 80)
     print("\n⚠️  주의: 이 서버는 개발용입니다. 실제 운영 환경에서는 사용하지 마세요.")
@@ -168,4 +168,4 @@ if __name__ == '__main__':
     import os
     debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
     
-    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
+    app.run(debug=debug_mode, host='0.0.0.0', port=5701)
