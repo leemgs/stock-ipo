@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Example: How to use the IPO Analyzer with custom stock data
 """
 
 from datetime import date
 from ipo_analyzer import IPOStock, IPOAnalyzer
+import sys
+
+# UTF-8 출력 보장
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 
 def example_custom_analysis():

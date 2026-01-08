@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 IPO Stock Short-Term Trading Analysis Program
 공모주 청약 단타 수익 분석 프로그램
@@ -12,6 +13,13 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple
 from datetime import date
 from enum import Enum
+import sys
+
+# UTF-8 출력 보장
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
 
 
 class SuitabilityStatus(Enum):

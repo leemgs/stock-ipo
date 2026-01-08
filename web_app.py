@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 IPO Analyzer Web Application
 웹 기반 공모주 분석 도구
@@ -8,8 +9,21 @@ from flask import Flask, render_template, request, jsonify
 from datetime import date, datetime
 from ipo_analyzer import IPOStock, IPOAnalyzer, create_sample_ipo_data
 import os
+import sys
+import json as json_module
+
+# UTF-8 인코딩 강제 설정
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8')
 
 app = Flask(__name__)
+
+# Flask JSON 인코딩 설정: UTF-8로 한글이 깨지지 않도록 설정
+# ensure_ascii=False로 설정하여 유니코드 이스케이프 방지
+app.json.ensure_ascii = False
+app.json.sort_keys = False
 
 # 템플릿 디렉토리가 없으면 생성
 if not os.path.exists('templates'):
