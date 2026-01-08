@@ -1,0 +1,26 @@
+[Unit]
+Description=Stock IPO Analysis Web Application
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/stock-ipo
+Environment="PATH=/opt/stock-ipo/venv/bin"
+Environment="FLASK_DEBUG=False"
+ExecStart=/opt/stock-ipo/venv/bin/python3 /opt/stock-ipo/web_app.py
+Restart=always
+RestartSec=10
+
+# 보안 설정
+PrivateTmp=true
+NoNewPrivileges=true
+
+# 로깅
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=stock-ipo
+
+[Install]
+WantedBy=multi-user.target
