@@ -1,3 +1,4 @@
+
 # 📈 공모주 청약 단타 분석 프로그램
 
 ## 🎯 개요
@@ -225,3 +226,4 @@ sudo systemctl start stock-ipo.service
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Deployment**: systemd, Gunicorn (선택사항), Nginx (선택사항)
 - **Encoding**: UTF-8 (한글 완벽 지원)
+
