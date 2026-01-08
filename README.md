@@ -2,6 +2,22 @@
 
 공모주 청약 단타 수익 분석 프로그램
 
+## 🌐 웹 애플리케이션 (NEW!)
+
+**컴퓨터 지식 없이도 웹 브라우저에서 버튼 클릭만으로 사용 가능!**
+
+```bash
+pip install -r requirements.txt
+python3 web_app.py
+```
+브라우저에서 `http://localhost:5000` 접속
+
+![웹앱 스크린샷](https://github.com/user-attachments/assets/919b529e-dcb6-41a3-ae8d-bbc85a711f34)
+
+👉 **[빠른 시작 가이드](QUICKSTART.md)** - 처음 사용하시는 분은 여기를 참고하세요!
+
+---
+
 ## 개요
 
 이 프로그램은 공모주 IPO 단기 수급과 상장일 매도 확률을 과거 데이터와 수급 구조로 판단하여 상장일 당일 단타 수익을 노리는 투자자를 위한 분석 도구입니다.
