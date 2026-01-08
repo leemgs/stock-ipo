@@ -26,6 +26,13 @@ def index():
 def analyze():
     """분석 실행 API"""
     try:
+        # Validate request has JSON body
+        if not request.is_json:
+            return jsonify({
+                'success': False,
+                'error': '유효하지 않은 요청입니다.'
+            }), 400
+        
         # 샘플 데이터 사용 또는 사용자 데이터 사용
         use_sample = request.json.get('use_sample', True)
         
@@ -96,9 +103,11 @@ def analyze():
         })
         
     except Exception as e:
+        # Log the error for debugging but don't expose details to user
+        app.logger.error(f"Analysis error: {str(e)}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': '분석 중 오류가 발생했습니다. 입력 데이터를 확인해주세요.'
         }), 400
 
 
@@ -138,5 +147,11 @@ if __name__ == '__main__':
     print("  http://localhost:5000")
     print("\n종료하려면 Ctrl+C를 누르세요.\n")
     print("=" * 80)
+    print("\n⚠️  주의: 이 서버는 개발용입니다. 실제 운영 환경에서는 사용하지 마세요.")
+    print("   운영 환경에서는 Gunicorn, uWSGI 등의 WSGI 서버를 사용하세요.\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Get debug mode from environment variable, default to True for development
+    import os
+    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
