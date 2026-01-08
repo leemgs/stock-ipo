@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공모주 IPO 단타 분석</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .control-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .summary-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        
+        .summary-box h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-item .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-item .label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+        
+        .stock-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        
+        .stock-card.suitable {
+            border-left: 5px solid #10b981;
+        }
+        
+        .stock-card.unsuitable {
+            border-left: 5px solid #ef4444;
+        }
+        
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stock-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stock-status {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+        
+        .stock-status.suitable {
+            background: #10b981;
+            color: white;
+        }
+        
+        .stock-status.unsuitable {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .stock-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .info-item {
+            font-size: 0.95em;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .return-highlight {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        .section {
+            margin: 20px 0;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+        
+        .list-item {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .list-item:before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .strength-item:before {
+            color: #10b981;
+        }
+        
+        .weakness-item:before {
+            color: #ef4444;
+        }
+        
+        .timing-box {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .timing-item {
+            margin: 15px 0;
+        }
+        
+        .timing-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        
+        .timing-safe {
+            color: #10b981;
+        }
+        
+        .timing-danger {
+            color: #ef4444;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .warning-item {
+            padding: 5px 0;
+            color: #856404;
+        }
+        
+        .footer {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 공모주 IPO 단타 분석</h1>
+            <p>컴퓨터 지식 없이도 쉽게 사용하는 공모주 투자 분석 도구</p>
+        </div>
+        
+        <div class="control-panel">
+            <button class="btn" onclick="analyzeStocks()">📊 샘플 데이터로 분석 시작</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <p>⏳ 분석 중입니다...</p>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="summary-box">
+                <h2>📈 분석 요약</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="number" id="suitable-count">0</span>
+                        <span class="label">단타 적합 종목</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="number" id="unsuitable-count">0</span>
+                        <span class="label">단타 부적합 종목</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="number" id="total-count">0</span>
+                        <span class="label">전체 분석 종목</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="suitable-stocks-container"></div>
+            <div id="unsuitable-stocks-container"></div>
+        </div>
+        
+        <div class="footer">
+            <p>※ 본 분석은 과거 데이터와 수급 구조 기반 판단이며, 실제 시장 상황에 따라 달라질 수 있습니다.</p>
+            <p>투자 결정은 본인의 책임 하에 이루어져야 합니다.</p>
+        </div>
+    </div>
+    
+    <script>
+        async function analyzeStocks() {
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').classList.remove('active');
+            
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        use_sample: true
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    alert('분석 중 오류가 발생했습니다: ' + data.error);
+                }
+            } catch (error) {
+                alert('서버 오류가 발생했습니다: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+        
+        function displayResults(data) {
+            // Update summary
+            document.getElementById('suitable-count').textContent = data.suitable_count;
+            document.getElementById('unsuitable-count').textContent = data.unsuitable_stocks.length;
+            document.getElementById('total-count').textContent = data.total_count;
+            
+            // Display suitable stocks
+            const suitableContainer = document.getElementById('suitable-stocks-container');
+            suitableContainer.innerHTML = '';
+            
+            if (data.suitable_stocks.length > 0) {
+                const suitableTitle = document.createElement('div');
+                suitableTitle.className = 'summary-box';
+                suitableTitle.innerHTML = '<h2>✅ 단타 적합 종목</h2>';
+                suitableContainer.appendChild(suitableTitle);
+                
+                data.suitable_stocks.forEach((stock, index) => {
+                    const card = createStockCard(stock, true, index + 1);
+                    suitableContainer.appendChild(card);
+                });
+            }
+            
+            // Display unsuitable stocks
+            const unsuitableContainer = document.getElementById('unsuitable-stocks-container');
+            unsuitableContainer.innerHTML = '';
+            
+            if (data.unsuitable_stocks.length > 0) {
+                const unsuitableTitle = document.createElement('div');
+                unsuitableTitle.className = 'summary-box';
+                unsuitableTitle.innerHTML = '<h2>❌ 단타 부적합 종목</h2>';
+                unsuitableContainer.appendChild(unsuitableTitle);
+                
+                data.unsuitable_stocks.forEach((stock) => {
+                    const card = createStockCard(stock, false);
+                    unsuitableContainer.appendChild(card);
+                });
+            }
+            
+            // Show results
+            document.getElementById('results').classList.add('active');
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function createStockCard(stock, isSuitable, rank) {
+            const card = document.createElement('div');
+            card.className = 'stock-card ' + (isSuitable ? 'suitable' : 'unsuitable');
+            
+            let html = `
+                <div class="stock-header">
+                    <div>
+                        ${rank ? `<span style="color: #667eea; font-size: 1.5em; font-weight: bold;">#${rank}</span> ` : ''}
+                        <span class="stock-name">${stock.name}</span>
+                    </div>
+                    <span class="stock-status ${isSuitable ? 'suitable' : 'unsuitable'}">
+                        ${stock.status}
+                    </span>
+                </div>
+                
+                <div class="stock-info">
+                    <div class="info-item">
+                        <span class="info-label">상장일</span>
+                        <span class="info-value">${stock.listing_date}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">공모가</span>
+                        <span class="info-value">${stock.ipo_price.toLocaleString()}원</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">공모가 밴드</span>
+                        <span class="info-value">${stock.price_band}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">예상 수익률</span>
+                        <span class="return-highlight">+${stock.expected_return}%</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">업종</span>
+                        <span class="info-value">${stock.sector}</span>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">판단 근거</div>
+                    ${stock.reasons.map(r => `<div class="list-item">${r}</div>`).join('')}
+                </div>
+            `;
+            
+            if (stock.warnings && stock.warnings.length > 0) {
+                html += `
+                    <div class="warning-box">
+                        <div style="font-weight: bold; margin-bottom: 10px;">⚠️ 주의사항</div>
+                        ${stock.warnings.map(w => `<div class="warning-item">${w}</div>`).join('')}
+                    </div>
+                `;
+            }
+            
+            if (stock.strengths && stock.strengths.length > 0) {
+                html += `
+                    <div class="section">
+                        <div class="section-title">장점</div>
+                        ${stock.strengths.map(s => `<div class="list-item strength-item">${s}</div>`).join('')}
+                    </div>
+                `;
+            }
+            
+            if (stock.weaknesses && stock.weaknesses.length > 0) {
+                html += `
+                    <div class="section">
+                        <div class="section-title">단점</div>
+                        ${stock.weaknesses.map(w => `<div class="list-item weakness-item">${w}</div>`).join('')}
+                    </div>
+                `;
+            }
+            
+            if (stock.timing) {
+                html += `
+                    <div class="timing-box">
+                        <div style="font-size: 1.3em; font-weight: bold; margin-bottom: 15px; color: #667eea;">
+                            ⏰ 매도 타이밍 추천
+                        </div>
+                        <div class="timing-item">
+                            <div class="timing-label timing-safe">✅ 가장 안전한 매도 시간</div>
+                            <div>${stock.timing.safe_period}</div>
+                        </div>
+                        <div class="timing-item">
+                            <div class="timing-label timing-danger">⚠️ 가장 위험한 시간대</div>
+                            <div>${stock.timing.dangerous_period}</div>
+                        </div>
+                        <div class="timing-item">
+                            <div class="timing-label">💡 추천 근거</div>
+                            <div style="color: #666;">${stock.timing.reason}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            card.innerHTML = html;
+            return card;
+        }
+    </script>
+</body>
+</html>
